@@ -9,7 +9,7 @@
 Run composer install
 
 ```
-$ composer install
+$ composer install --ignore-platform-reqs
 ```
 
 From the root of the projet:
