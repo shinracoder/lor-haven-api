@@ -1,0 +1,43 @@
+version: '3.1'
+
+volumes:
+  mysql:
+  bashhistory:
+
+services:
+  web:
+    container_name: runeterra_api_web
+    image: nginx:latest
+    ports:
+      - "8091:80"
+    volumes:
+      - ../:/app
+      - ./site.conf:/etc/nginx/conf.d/site.conf
+    links:
+      - php
+  php:
+    container_name: runeterra_api_php
+    build:
+      context: php/
+      dockerfile: DockerFile
+    volumes:
+      - ../:/app
+      - ~/.composer:/root/.composer
+    environment:
+      PHP_IDE_CONFIG: serverName=app.local
+      XDEBUG_CONFIG: idekey=PHPSTORM remote_host=${HOST_ADDRESS} profiler_enabled=0 remote_connect_back=0
+  db:
+    container_name: runeterra_api_mysql
+    image: mysql
+    ports:
+      - "3307:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: ${DATABASE}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+
