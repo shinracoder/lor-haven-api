@@ -3,6 +3,7 @@ version: '3.1'
 volumes:
   mysql:
   bashhistory:
+  search_engine:
 
 services:
   web:
@@ -40,4 +41,12 @@ services:
       MYSQL_DATABASE: ${DATABASE}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
+  search_engine:
+    container_name: meilisearch
+    image: getmeili/meilisearch
+    ports:
+      - "7700:7700"
+    volumes:
+      - search_engine:/data.ms
+
 

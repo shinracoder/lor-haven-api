@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Card extends Model
 {
+    use Searchable;
+
     /**
      * The table associated with the model.
      *
@@ -20,6 +23,16 @@ class Card extends Model
     ];
 
     /**
+     * Get the name of the index associated with the model.
+     *
+     * @return string
+     */
+    public function searchableAs(): string
+    {
+        return 'cards_index';
+    }
+
+    /**
      * The attributes that should be cast.
      *
      * @var array
@@ -32,4 +45,20 @@ class Card extends Model
         'keywordRefs' => 'array',
         'subtypes' => 'array',
     ];
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    public function toSearchableArray()
+    {
+        $array = $this->toArray();
+
+        unset($array['flavorText']);
+
+        // Customize the data array...
+
+        return $array;
+    }
 }

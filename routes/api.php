@@ -21,5 +21,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::prefix('/cards')->group(function () {
     Route::get('/', [CardsController::class, 'list']);
+    Route::get('/search', [CardsController::class, 'search']);
     Route::get('/code/{cardCode}', [CardsController::class, 'get']);
 });

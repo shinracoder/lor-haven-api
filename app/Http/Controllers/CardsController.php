@@ -27,11 +27,36 @@ class CardsController extends Controller
             'version' => $version,
         ]) : Version::query()->firstWhere(['latest' => true]);
 
-        return response()->json(Card::where([
+        $query = [
             'version' => $version->getAttributeValue('version'),
-            'locale' => App::getLocale()
-        ])->paginate(15));
+            'locale' => App::getLocale(),
+            'collectible' => 1
+        ];
+
+        return response()->json(Card::where($query)->pagination(100));
     }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function search(Request $request): JsonResponse
+    {
+        $version = $request->get('version');
+        $search = $request->get('term', '');
+
+        /** @var Version $version */
+        $version = $version ? Version::query()->firstWhere([
+            'version' => $version,
+        ]) : Version::query()->firstWhere(['latest' => true]);
+
+        return response()->json(Card::search($search)
+            ->where('version' , $version->getAttributeValue('version'))
+            ->where('locale' , App::getLocale())
+            ->where('collectible' , 1)
+            ->paginate(100));
+    }
+
 
     /**
      * Display the specified resource.
