@@ -26,6 +26,8 @@ abstract class AbstractRuneterraUpdater extends Command
         'es_es',
     ];
 
+    protected const BASE_URL = 'https://dd.b.pvp.net/';
+
     /**
      * @var Filesystem
      */

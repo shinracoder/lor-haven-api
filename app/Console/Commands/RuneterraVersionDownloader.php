@@ -33,32 +33,8 @@ class RuneterraVersionDownloader extends AbstractRuneterraUpdater
     public function handle(): void
     {
         $this->breakOnVersionFound = true;
-        $versions = [
-            '1_0_0',
-            '1_1_0',
-            '1_2_0',
-            '1_3_0',
-            '1_4_0',
-            '1_5_0',
-            '1_6_0',
-            '1_7_0',
-            '1_8_0',
-            '1_9_0',
-            '1_10_0',
-            '1_11_0',
-            '1_12_0',
-            '1_13_0',
-            '1_14_0',
-            '1_15_0',
-            '1_16_0',
-            '2_0_0',
-            '2_1_0',
-            '2_2_0',
-            '2_3_0',
-            '2_4_0',
-            '2_5_0',
-            '2_6_0',
-        ];
+        $versions = $this->getVersions();
+
         foreach ($versions as $version) {
             $newVersion = Version::query()->firstWhere('version', '=', $version);
             if (!$newVersion) {
@@ -68,6 +44,43 @@ class RuneterraVersionDownloader extends AbstractRuneterraUpdater
                 );
             }
         }
+    }
+
+    public function getVersions(): array
+    {
+        $versions = [];
+        $majorVersion = 1;
+        $minorVersion = 0;
+        $previousMajorVersion = null;
+        $previousMinorVersion = null;
+        $tries = 0;
+
+        do {
+            $version = "{$majorVersion}_{$minorVersion}_0";
+            if ($version === '1_9_0') {
+                //There is no version 1.9.0 there was a minor version gap
+                $minorVersion++;
+                $version = "{$majorVersion}_{$minorVersion}_0";
+            }
+            if (
+                @file_get_contents(
+                'https://dd.b.pvp.net/' . $version . '/core-en_us.zip',
+                0,
+                NULL,
+                0,
+                1)
+            ) {
+                $versions[] = $version;
+                $tries = 0;
+                $minorVersion++;
+            } else {
+                $minorVersion = 0;
+                $majorVersion++;
+                $tries++;
+            }
+        } while ($tries <= 2);
+
+        return $versions;
     }
 
 }
